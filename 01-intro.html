@@ -1,0 +1,1419 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 1. Общее устройство сети Интернет. Язык разметки HTML</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css" integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" integrity="sha512-0AUO8B5ll9y1ERV/55xq3HeccBGnvAJQsVGitNac/iQCLyDTGLUBMPqlupIWp/rJg0hV3WWHusXchEIdqFAv1Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" integrity="sha512-NJYOiL4HPnu7QvvGcvHAnVVz2X6qWcTDAH4x3fmUOW/SGUbK46IbzHhQ1KoKDfK2trs5RwUu03Ax9sxjqz1iQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" integrity="sha512-NJYOiL4HPnu7QvvGcvHAnVVz2X6qWcTDAH4x3fmUOW/SGUbK46IbzHhQ1KoKDfK2trs5RwUu03Ax9sxjqz1iQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --r-heading-font: "Source Sans 3", sans-serif;
+            --r-main-font: "Source Sans 3", sans-serif;
+            --r-code-font: "Jetbrains Mono", monospace;
+        }
+
+        .reveal pre code {
+            max-height: 800px;
+        }
+
+        kbd {
+            padding: .2rem .4rem;
+            font-size: 87.5%;
+            color: #fff;
+            background-color: #212529;
+            border-radius: .2rem;
+            font-family: var(--r-code-font);
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-markdown>
+                <textarea data-template>
+                    # Общее устройство сети Интернет. Язык разметки HTML
+                    
+                    Веб для самых-самых маленьких
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Как загружается веб-страница?
+
+                    Для понимания общей картины перед изучением непосредственно веб-разработки нужно посмотреть, что происходит с момента нажатия <kbd>Enter</kbd> в адресной строке
+                    браузера до появления готовой страницы в его окне.
+
+                    Это нужно, чтобы в целом сеть не была "чёрным ящиком", который просто передаёт данные.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Как загружается веб-страница?
+
+                    В целом последовательность действий следующая:
+
+                    * Получение IP-адреса сервера по его домену;
+                    * Обращение к серверу;
+                    * Получение самой страницы;
+                    * Получение дополнительных ресурсов при необходимости;
+                    * Отрисовка страницы.
+
+                    Звучит просто, но на каждом шаге есть свои особенности, поэтому давайте разбираться.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Интернет как сеть сетей
+
+                    Может казаться, что при обращении куда-либо в сеть путь запроса выглядит так:
+
+                    <div style="text-align: center;">
+                        <img src="images/client-server-easy.svg" 
+                            style="width: 60vw; min-width: 500px; max-width: 1000px;"
+                            alt="Неправильное взаимодействие клиента и сервера">
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Интернет как сеть сетей
+
+                    Ничего подобного, на самом деле запрос пойдёт как-то так (и такой путь не гарантируется):
+
+                    <div style="text-align: center;">
+                        <img src="images/client-server-hard.svg" 
+                            style="width: 80vw; min-width: 500px;"
+                            alt="Правильное взаимодействие клиента и сервера">
+                    </div>
+
+                    Важно понимать, что интернет — это сеть со сложной топологией, которую, с другой стороны, можно охарактеризовать как сеть сетей.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Интернет как сеть сетей
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Представьте, что у вас в квартире есть несколько устройств, которым нужно взаимодействовать между собой. Самый простой способ их
+                    соединить — это соединить каждое устройство с каждым напрямую. Получится сеть с полносвязной топологией. 
+
+                    Это очевидно, но не слишком удобно и не слишком выгодно. Каждое новое устройство будет сильно увеличивать количество соединений,
+                    и для больших сетей такой подход не работает.
+
+                    </div>
+                    <div style="text-align: center">
+
+                    ![Сеть с полносвязной топологией](https://developer.mozilla.org/ru/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-2.png)
+                    
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Интернет как сеть сетей
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Разумное развитие этой идеи — добавить "посредника", через которого будут связываться остальные устройства. Такое устройство называется
+                    **маршрутизатором**. При его наличии сеть преображается.
+
+                    Маршрутизаторы в разных квартирах могут соединяться с общим маршрутизатором, установленным в подъезде, а они, в свою очередь,
+                    с более мощным маршрутизатором на уровне дома.
+
+                    </div>
+                    <div style="text-align: center;">
+
+                    ![Сеть с топологией "звезда"](https://developer.mozilla.org/ru/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-3.png)
+                    
+                    </div>
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Интернет как сеть сетей
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Дальше мы можем соединить несколько маршрутизаторов в локальную сеть большего размера (на уровне подъезда, района,
+                    города). Сейчас такие сети в основном передают трафик дальше, но в девяностых и нулевых в отдельных районах 
+                    и целых городах были живые локальные сети, доступ к которым был бесплатный. 
+                    Примером такой сети можно считать [Тонет](https://habr.com/ru/companies/onlinepatent/articles/789810/) в Томске.
+
+                    </div>
+                    <div style="text-align: center;">
+
+                    ![Крупная локальная сеть](https://developer.mozilla.org/ru/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-5.png)
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    ## Интернет как сеть сетей
+
+                    Выходя на всё более высокий уровень, большая сеть подключается к оборудованию провайдера, которое имеет 
+                    выход к магистральной сети связи.
+
+                    Отсюда и появляется большая схема, по которой в действительности передаётся запрос от вас к серверу и обратно.
+
+                    </div>
+                    <div style="text-align: center;">
+
+                    <img src="https://developer.mozilla.org/ru/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-7.png" 
+                         alt="Общая схема выхода в интернет"
+                         style="height: 60vh">
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Uniform Resource Identifier
+
+                    Прекрасно, теперь мы знаем, как в целом вся эта система работает. Теперь посмотрим конкретные задачи. Первая задача браузера — 
+                    разобрать ту конструкцию, которую мы вводим в адресной строке.
+
+                    Формально эта конструкция называется **URI** (Uniform Resource Identifier) и не привязана непосредственно к тому, как работает сеть.  
+                    На практике рассматривается подмножество URI, которое называется **URL** (Uniform Resource Locator).
+
+                    Покажем разницу на примере: `tel:+78126070474` является URI, но не является URL.
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Uniform Resource Identifier
+
+                    Сам по себе URI состоит из некоторого количества фрагментов:
+
+                    * **Схема** обычно указывает на тип ресурса или протокол, с помощью которого происходит взаимодействие;
+                    * **Логин пользователя**, после двоеточия можно указать и пароль, но так делать не рекомендуется;
+                    * **Хост**, к которому идёт обращение, и нужный **порт** (часто порт опускают и используют значение по умолчанию, зависящее от протокола);
+
+                    <pre>          
+                                <span style="color:rgb(0, 76, 178)">userinfo</span>       <span style="color:rgb(0, 177, 17)">host</span>      <span style="color:rgb(178, 111, 0)">port</span>
+                                <span style="color:rgb(0, 76, 178)">┌──┴───┐</span> <span style="color:rgb(0, 177, 17)">┌──────┴──────┐</span> <span style="color:rgb(178, 111, 0)">┌┴─┐</span>
+                        https://john.doe@www.example.com:1234/forum/questions/?tag=networking&amp;order=newest#top
+                        <span style="color:rgb(178, 111, 0)">└─┬─┘</span>   <span style="color:rgb(176, 0, 177)">└─────────────┬─────────────┘</span><span style="color:rgb(0, 76, 178)">└───────┬───────┘</span> <span style="color:rgb(0, 178, 17)">└────────────┬────────────┘</span> <span style="color:rgb(178, 111, 0)">└┬┘</span>
+                        <span style="color:rgb(178, 111, 0)">scheme</span>            <span style="color:rgb(176, 0, 177)">authority</span>                <span style="color:rgb(0, 76, 178)">path</span>                   <span style="color:rgb(0, 178, 17)"><span style="color:rgb(0, 178, 17)">query</span></span>          <span style="color:rgb(178, 111, 0)">fragment</span>
+
+                    </pre>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Uniform Resource Identifier
+
+                    Сам по себе URI состоит из некоторого количества фрагментов:
+
+                    * **Путь к ресурсу**, который обрабатывается самим сервером и может состоять из нескольких сегментов;
+                    * **Параметры запроса**, которые сервер может обработать при получении ресурса;
+                    * **Фрагмент ресурса**, к которому нужно перейти после загрузки ресурса браузером, обычно это заголовок какой-то части страницы.
+
+                    В рамках фронтовой разработки нас интересует в основном часть хоста.
+
+                    <pre>          
+                                <span style="color:rgb(0, 76, 178)">userinfo</span>       <span style="color:rgb(0, 177, 17)">host</span>      <span style="color:rgb(178, 111, 0)">port</span>
+                                <span style="color:rgb(0, 76, 178)">┌──┴───┐</span> <span style="color:rgb(0, 177, 17)">┌──────┴──────┐</span> <span style="color:rgb(178, 111, 0)">┌┴─┐</span>
+                        https://john.doe@www.example.com:1234/forum/questions/?tag=networking&amp;order=newest#top
+                        <span style="color:rgb(178, 111, 0)">└─┬─┘</span>   <span style="color:rgb(176, 0, 177)">└─────────────┬─────────────┘</span><span style="color:rgb(0, 76, 178)">└───────┬───────┘</span> <span style="color:rgb(0, 178, 17)">└────────────┬────────────┘</span> <span style="color:rgb(178, 111, 0)">└┬┘</span>
+                        <span style="color:rgb(178, 111, 0)">scheme</span>            <span style="color:rgb(176, 0, 177)">authority</span>                <span style="color:rgb(0, 76, 178)">path</span>                   <span style="color:rgb(0, 178, 17)"><span style="color:rgb(0, 178, 17)">query</span></span>          <span style="color:rgb(178, 111, 0)">fragment</span>
+
+                    </pre>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Domain Name System
+
+                    Ещё одна проблема не совсем очевидна. С одной стороны, сеть сама по себе работает с IP-адресами, и мы, зная адрес сервера, можем отправить к нему
+                    запрос. С другой стороны, запоминать адрес каждого сервера хлопотно, и хочется запоминать буквенное обозначение (**домен**).
+
+                    Так можно делать, но где домен будет преобразовываться в IP-адрес?
+
+                    <div style="text-align: center; font-size: 3rem;">
+                        <code>my.itmo.ru -> 158.160.35.173</code>
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Domain Name System
+
+                    На заре интернета такую задачу решал специальный файл `/etc/hosts`, который рассылался пользователям и содержал сопоставление доменов и IP-адресов.
+                    Он существует и поныне, но используется редко.
+
+                    Сейчас эту задачу на себя взяла **система доменных имён** (Domain Name System, DNS). Подробный рассказ про DNS мы оставим коллегам, просто упомянем, что
+                    обращение к DNS-серверу идёт напрямую по IP-адресу, что есть иерархия этих серверов в виде дерева и что каждый сервер отвечает за часть этого дерева (**зону**).
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    Оставим детали отправки запроса к серверу и получения ресурса коллегам  
+                    на смежных дисциплинах :)
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Критический путь рендеринга
+
+                    Предположим, что ресурс, который мы получаем, является HTML-страницей. После её скачивания с сервера её нужно как-то обработать, чтобы в итоге получить
+                    отрисованную страницу. Шаги, выполняющиеся с момента загрузки страницы до её вывода на экран, называются **критическим путём рендеринга** (CRP).
+
+                    CRP состоит из следующих шагов:<!-- .element: class="fragment" -->
+
+                    * Токенизация HTML-документа и генерация DOM;<!-- .element: class="fragment" -->
+                    * Поиск дополнительных ресурсов (картинки, стили и т.д.) и их загрузка;<!-- .element: class="fragment" -->
+                    * Генерация CSSOM и построение дерева рендера (какие стили куда применить);<!-- .element: class="fragment" -->
+                    * Выполнение JS-скриптов, блокирующих рендеринг;<!-- .element: class="fragment" -->
+                    * Рендеринг страницы (компоновка, отрисовка с наложением слоёв, композиция).<!-- .element: class="fragment" -->
+
+                    Про это будет отдельный разговор, поэтому сейчас мы прошлись по CRP поверхностно.<!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Что мы будем смотреть в этом семестре?
+
+                    Из всей этой истории в этом семестре мы сосредоточимся на том, что работает именно в браузере:
+
+                    * HTML — язык разметки страниц (какой контент где находится и что означает);
+                    * CSS — каскадные таблицы стилей (как будет выглядеть контент);
+                    * JS — язык программирования (насколько интерактивным будет контент).
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    ## Кстати, про HTML...
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## История появления HTML
+
+                    **Язык разметки гипертекста** (HyperText Markup Language, HTML) — специальный язык для разметки документов, предназначенных для просмотра
+                    в браузерах. Сам по себе **гипертекст** — это текст, содержащий гиперссылки на другие тексты.
+
+                    Сам по себе HTML появился в 90-х годах прошлого века как развитие идеи другого языка разметки, **SGML** (Standard Generalized Markup Language).
+                    Исходно его задачей было упрощение структуры документа, задаваемой предшественником.
+                    <!-- .element: class="fragment" -->
+
+                    Исходно HTML создавался как язык разметки, позволяющий создавать документы для отображения на различных устройствах. Уже потом в нём начали
+                    появляться дополнительные возможности.
+                    <!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Теги, элементы и атрибуты
+
+                    В основе HTML лежат три понятия: теги, элементы и атрибуты. Их отличие проще посмотреть на примере.
+
+                    ```html
+                      Тег      Атрибут              Содержимое             Тег
+                    ┌──┴───┐┌─────┴──────┐ ┌─────────────┴─────────────┐┌───┴───┐
+                    <strong class="is-red">Крайне важный фрагмент текста</strong>
+                    └────────────────────────────┬──────────────────────────────┘
+                                              Элемент
+                    ```
+
+                    Отсюда видно, что **тег** — это фрагмент, непосредственно выделяющий часть документа и придающий ему определённый смысл (например,
+                    здесь мы выделяем важный текст), **атрибуты** — это дополнительные "настройки" (здесь мы задаём дополнительные стили), а **элемент** —
+                    это и тег, и атрибуты, и содержимое вместе.
+
+                    Важный момент: при отрисовке страницы из содержимого убираются переносы строк и лишние пробелы.
+                    <!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Общая структура HTML-страницы
+
+                    Любая HTML-страница должна иметь следующие элементы:
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr;">
+                    
+                    <div>
+
+                    * Директива `!DOCTYPE` указывает на используемую версию HTML. Раньше нужно было указывать длинную строчку,
+                      сейчас достаточно указать `<!DOCTYPE&nbsp;html>`.
+                    * Тег `<html>` является корнем всего документа.
+                    * Тег `<head>` содержит метаинформацию, не отображающуюся на самой странице.
+                    * Тег `<body>` хранит в себе основное содержимое, показываемое пользователю.
+
+                    </div>
+                    <div>
+                    
+                    ```html[]
+                    <!DOCTYPE html>
+                    <html>
+                        <head></head>
+                        <body></body>
+                    </html>
+                    ```
+
+                    </div>
+                    </div>
+
+                    Подробнее про `DOCTYPE` и его применение можно почитать [в одном блоге](https://hsivonen.fi/doctype/).
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Метаданные в `<head>`
+
+                    В метаинформации страницы можно указать много всякого интересного:
+
+                    * Тег `<title>` задаёт заголовок страницы, который отображается в виде названия вкладки в браузере.
+                    * Теги `<link>` задают ссылки на ресурсы, нуждающиеся в загрузке, например, стили или иконки.
+                    * Теги `<meta>` задают [прочую метаинформацию](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name):
+                      ключевые слова, краткое описание страницы, кодировку.
+
+                    ```html[|8|5-7|2-4]
+                    <head>
+                        <meta charset="utf-8">
+                        <meta name="keywords" content="программирование, веб-разработка, JavaScript, CSS, JS, HTML">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <link rel="stylesheet" href="styles.css">
+                        <link rel="stylesheet" href="print.css" media="print">
+                        <link rel="icon" href="favicon.ico" type="image/x-icon">
+                        <title>Мой блог</title>
+                    </head>
+                    ```
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Разметка страницы
+
+                    Теперь перейдём к основному набору тегов, которые вы будете использовать чаще: теги для разметки непосредственно содержимого.
+                    Их для удобства можно разделить на несколько категорий:
+
+                    * Разметка основных блоков страницы;
+                    * Текстовые элементы;
+                    * Разметка фрагментов текста;
+                    * Оформление таблиц;
+                    * Встраивание мультимедийных файлов;
+                    * Формы для ввода данных;
+                    * Интерактивные элементы.
+
+                    Дальше будет много примеров :)
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    <!-- .slide: data-auto-animate -->
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+
+                    `<main>` содержит основной контент страницы, который является уникальным (один на всю страницу).
+
+                    </div>
+
+                    <div>
+
+                    ```html[2-4]
+                    <body>
+                        <main>
+                            Полезный контент
+                        </main>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>                    
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    <!-- .slide: data-auto-animate -->
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+
+                    `<header>` и `<footer>` содержат вводный контент, обычно повторяющийся на разных страницах.
+
+                    </div>
+
+                    <div>
+
+                    ```html[2-4,8-10]
+                    <body>
+                        <header>
+                            Набор ссылок на другие разделы
+                        </header>
+                        <main>
+                            Полезный контент
+                        </main>
+                        <footer>
+                            Контактная информация
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>                    
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    <!-- .slide: data-auto-animate -->
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+
+                    `<h1>`-`<h6>` выделяют заголовки шести разных уровней (первый — самый верхний).
+
+                    </div>
+
+                    <div>
+
+                    ```html[6]
+                    <body>
+                        <header>
+                            Набор ссылок на другие разделы
+                        </header>
+                        <main>
+                            <h1>Мой личный блог</h1>
+                            Полезный контент
+                        </main>
+                        <footer>
+                            Контактная информация
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>                    
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+
+                    `<article>` выделяет контент, являющийся самодостаточным, т.е. его можно поместить на другую страницу без потери смысла.
+                    У каждого такого элемента должен быть заголовок.
+
+                    </div>
+
+                    <div>
+
+                    ```html[7-10]
+                    <body>
+                        <header>
+                            Набор ссылок на другие разделы
+                        </header>
+                        <main>
+                            <h1>Мой личный блог</h1>
+                            <article>
+                                <h2>Лучшие практики JS</h2>
+                                Текст статьи
+                            </article>
+                        </main>
+                        <footer>
+                            Контактная информация
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+                    
+                    `<aside>` показывает контент, не относящийся к текущей странице напрямую (например, боковая панель или колл-аут).
+
+                    </div>
+
+                    <div>
+
+                    ```html[11-13]
+                    <body>
+                        <header>
+                            Набор ссылок на другие разделы
+                        </header>
+                        <main>
+                            <h1>Мой личный блог</h1>
+                            <article>
+                                <h2>Лучшие практики JS</h2>
+                                Текст статьи
+                            </article>
+                            <aside>
+                                Рекламная пауза
+                            </aside>
+                        </main>
+                        <footer>
+                            Контактная информация
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+                    
+                    `<nav>` выделяет навигацию внутри документа или к другим страницам (обычно это набор ссылок).
+
+                    </div>
+
+                    <div>
+
+                    ```html[3-6]
+                    <body>
+                        <header>
+                            <nav>
+                                <a href="#">На главную</a>
+                                <a href="#">Обо мне</a>
+                            </nav>
+                        </header>
+                        <main>
+                            <h1>Мой личный блог</h1>
+                            <article>
+                                <h2>Лучшие практики JS</h2>
+                                Текст статьи
+                            </article>
+                            <aside>
+                                Рекламная пауза
+                            </aside>
+                        </main>
+                        <footer>
+                            Контактная информация
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+                    
+                    `<section>` нужен для блоков, к которым не могут быть применены предыдущие теги. У каждого такого элемента должен быть заголовок.
+
+                    </div>
+
+                    <div>
+
+                    ```html[19-24]
+                    <body>
+                        <header>
+                            <nav>
+                                <a href="#">На главную</a>
+                                <a href="#">Обо мне</a>
+                            </nav>
+                        </header>
+                        <main>
+                            <h1>Мой личный блог</h1>
+                            <article>
+                                <h2>Лучшие практики JS</h2>
+                                Текст статьи
+                            </article>
+                            <aside>
+                                Рекламная пауза
+                            </aside>
+                        </main>
+                        <footer>
+                            <section>
+                                <h2>Контактная информация</h2>
+                            </section>
+                            <section>
+                                <h2>Полезные ссылки</h2>
+                            </section>
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Основные блоки страницы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Для разметки основных блоков можно использовать специальные элементы.
+                    По умолчанию они не дают никаких дополнительных стилей (кроме заголовков).
+                    
+                    При этом стоит помнить, что с течением времени могут появляться новые теги, например, тег `<search>` 
+                    появился только в 2023 году.
+
+                    </div>
+
+                    <div>
+
+                    ```html[]
+                    <body>
+                        <header>
+                            <nav>
+                                <a href="#">На главную</a>
+                                <a href="#">Обо мне</a>
+                            </nav>
+                        </header>
+                        <main>
+                            <h1>Мой личный блог</h1>
+                            <article>
+                                <h2>Лучшие практики JS</h2>
+                                Текст статьи
+                            </article>
+                            <aside>
+                                Рекламная пауза
+                            </aside>
+                        </main>
+                        <footer>
+                            <section>
+                                <h2>Контактная информация</h2>
+                            </section>
+                            <section>
+                                <h2>Полезные ссылки</h2>
+                            </section>
+                        </footer>
+                    </body>
+                    ```
+                    <!-- .element: data-id="main-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate data-auto-animate-restart style="text-align: left">
+                <textarea data-template>
+                    ## Текстовые элементы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Для разметки текста в целом (но не его фрагментов) используются текстовые элементы, у которых уже есть некоторые
+                    стили по умолчанию.
+
+                    Самый простой текстовый элемент — это абзац `<p>`. После каждого абзаца появляется небольшой интервал для их разделения.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[3-6]
+                    <article>
+                        <h2>Лучшие практики JS</h2>
+                        <p>
+                            Самая лучшая практика - 
+                            использовать его в меру
+                        </p>
+                    </article>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Текстовые элементы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Для разметки текста в целом (но не его фрагментов) используются текстовые элементы, у которых уже есть некоторые
+                    стили по умолчанию.
+
+                    При желании можно указать **преформатированный текст** с помощью тега `<pre>`. Такой текст будет отображаться с использованием
+                    моноширинного шрифта и с сохранением всех пробелов и переносов.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[7-11]
+                    <article>
+                        <h2>Лучшие практики JS</h2>
+                        <p>
+                            Самая лучшая практика - 
+                            использовать его в меру
+                        </p>
+                        <pre>
+                             (\_/)
+                            (='.'=)
+                            (")_(")
+                        </pre>
+                    </article>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Текстовые элементы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Для разметки текста в целом (но не его фрагментов) используются текстовые элементы, у которых уже есть некоторые
+                    стили по умолчанию.
+
+                    Цитаты оформляются с помощью тега `<blockquote>`.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[7-9]
+                    <article>
+                        <h2>Лучшие практики JS</h2>
+                        <p>
+                            Самая лучшая практика - 
+                            использовать его в меру
+                        </p>
+                        <blockquote>
+                            Нормально делай - нормально будет.
+                        </blockquote>
+                        <pre>
+                             (\_/)
+                            (='.'=)
+                            (")_(")
+                        </pre>
+                    </article>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Текстовые элементы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Для разметки текста в целом (но не его фрагментов) используются текстовые элементы, у которых уже есть некоторые
+                    стили по умолчанию.
+
+                    Можно добавлять как нумерованные списки (тег `<ol>`), так и маркированные (тег `<ul>`).
+                    При этом каждый элемент списка выделяется тегом `<li>`.
+
+                    Напомним, что в нумерованном списке порядок элементов важен, а в маркированном нет.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[3-8]
+                    <article>
+                        <h2>Подготовка к полумарафону</h2>
+                        <ol>
+                            <li>Пресс качат</li>
+                            <li>Бегит</li>
+                            <li>Турник</li>
+                            <li>Анжуманя</li>
+                        </ol>
+                    </article>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate data-auto-animate-restart style="text-align: left">
+                <textarea data-template>
+                    ## Разметка фрагментов текста
+
+                    <div style="display: grid; grid-template-columns: 2fr 3fr;">
+
+                    <div>
+                    
+                    Текст можно размечать достаточно большим количеством способов. Теги для разметки внутри текста, как и теги для текстов в целом,
+                    дают ту или иную стилизацию выделенного текста, но не стоит использовать их только ради красоты, для этого есть CSS.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[]
+                    <p>
+                        Объект Intl является 
+                        пространством имён
+                        для API интернационализации 
+                        ECMAScript, предоставляющим 
+                        языко-зависимое сравнение строк, 
+                        форматирование чисел и дат со 
+                        временем. Конструкторы объектов 
+                        Collator, NumberFormat и 
+                        DateTimeFormat являются 
+                        свойствами объекта Intl. На этой 
+                        странице описаны эти свойства, 
+                        а также общая функциональность 
+                        конструкторов интернационализации 
+                        и других функций.
+                    </p>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Разметка фрагментов текста
+
+                    <div style="display: grid; grid-template-columns: 2fr 3fr;">
+
+                    <div>
+                    
+                    Одна из самых простых вещей — выделение текста полужирным шрифтом и курсивом.
+                    За полужирный шрифт отвечают теги `<b>` и `<strong>`, за курсив&nbsp;— `<i>` и `<em>`.
+
+                    В каждой паре тегов есть различие, про которое мы поговорим на следующей лекции.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[3,6,11,14]
+                    <p>
+                        Объект Intl является 
+                        <strong>пространством имён</strong>
+                        для API интернационализации 
+                        ECMAScript, предоставляющим 
+                        <em>языко-зависимое</em> сравнение строк, 
+                        форматирование чисел и дат со 
+                        временем. Конструкторы объектов 
+                        Collator, NumberFormat и 
+                        DateTimeFormat являются 
+                        <i>свойствами</i> объекта Intl. На этой 
+                        странице описаны эти свойства, 
+                        а также общая функциональность 
+                        <b>конструкторов</b> интернационализации 
+                        и других функций.
+                    </p>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Разметка фрагментов текста
+
+                    <div style="display: grid; grid-template-columns: 2fr 3fr;">
+
+                    <div>
+                    
+                    Теги `<u>` и `<ins>` позволяют подчеркнуть текст, а `<s>` и `<del>`&nbsp;— зачеркнуть.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[4,8,13,15]
+                    <p>
+                        Объект Intl является 
+                        <strong>пространством имён</strong>
+                        для API <s>интернационализации</s> 
+                        ECMAScript, предоставляющим 
+                        <em>языко-зависимое</em> сравнение строк, 
+                        форматирование чисел и дат со 
+                        временем. Конструкторы <del>объектов</del> 
+                        Collator, NumberFormat и 
+                        DateTimeFormat являются 
+                        <i>свойствами</i> объекта Intl. На этой 
+                        странице описаны эти свойства, 
+                        а также <ins>общая</ins> функциональность 
+                        <b>конструкторов</b> интернационализации 
+                        и <u>других</u> функций.
+                    </p>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Разметка фрагментов текста
+
+                    <div style="display: grid; grid-template-columns: 2fr 3fr;">
+
+                    <div>
+                    
+                    Ссылки можно добавлять с помощью тега `<a>`. У него есть обязательный атрибут `href`, задающий
+                    непосредственно ссылку, на которую ведёт фрагмент текста.
+
+                    Ещё один популярный атрибут, `target`, позволяет указать, открывать ли ссылку в новой вкладке или нет.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[9]
+                    <p>
+                        Объект Intl является 
+                        <strong>пространством имён</strong>
+                        для API <s>интернационализации</s> 
+                        ECMAScript, предоставляющим 
+                        <em>языко-зависимое</em> сравнение строк, 
+                        форматирование чисел и дат со 
+                        временем. Конструкторы <del>объектов</del> 
+                        <a href="#">Collator</a>, NumberFormat и 
+                        DateTimeFormat являются 
+                        <i>свойствами</i> объекта Intl. На этой 
+                        странице описаны эти свойства, 
+                        а также <ins>общая</ins> функциональность 
+                        <b>конструкторов</b> интернационализации 
+                        и <u>других</u> функций.
+                    </p>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Разметка фрагментов текста
+
+                    <div style="display: grid; grid-template-columns: 2fr 3fr;">
+
+                    <div>
+                    
+                    Фрагменты кода выделяются с помощью тега `<code>`.
+
+                    Особые случаи: ввод с клавиатуры и пример вывода программы, для них есть теги `<kbd>`
+                    и `<samp>` соответственно.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[2,18-21]
+                    <p>
+                        Объект <code>Intl</code> является 
+                        <strong>пространством имён</strong>
+                        для API <s>интернационализации</s> 
+                        ECMAScript, предоставляющим 
+                        <em>языко-зависимое</em> сравнение строк, 
+                        форматирование чисел и дат со 
+                        временем. Конструкторы <del>объектов</del> 
+                        <a href="#">Collator</a>, NumberFormat и 
+                        DateTimeFormat являются 
+                        <i>свойствами</i> объекта Intl. На этой 
+                        странице описаны эти свойства, 
+                        а также <ins>общая</ins> функциональность 
+                        <b>конструкторов</b> интернационализации 
+                        и <u>других</u> функций.
+                    </p>
+
+                    <p>
+                        При нажатии на <kbd>Enter</kbd> может появиться
+                        сообщение <samp>File Not Found</samp>.
+                    </p>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate data-auto-animate-restart style="text-align: left">
+                <textarea data-template>
+                    ## Таблицы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Достаточно интересная возможность HTML — создание таблиц различной структуры. Раньше этим пользовались,
+                    чтобы сделать сложную вёрстку, но сейчас есть правило использовать таблицы только для табличных данных.
+
+                    Таблица добавляется с помощью тега `<table>`. Сам по себе он бесполезен, так как строки таблицы добавляются
+                    с помощью тега `<tr>`, а ячейки в строке — с помощью тега `<td>`.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[]
+                    <table>
+                        <tr>
+                            <td>Ингредиент</td>
+                            <td>ккал на 100 г.</td>
+                        </tr>
+                        <tr>
+                            <td>Арахис</td>
+                            <td>551</td>
+                        </tr>
+                        <tr>
+                            <td>Пекан</td>
+                            <td>691</td>
+                        </tr>
+                        <tr>
+                            <td>Фундук</td>
+                            <td>651</td>
+                        </tr>
+                    </table>
+                    ```
+                    <!-- .element: data-id="table-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Таблицы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Современный HTML позволяет отдельно выделять шапку таблицы (`<thead>`), основное содержимое (`<tbody>`)
+                    и подвал (`<tfoot>`). Шапка, как правило, содержит названия столбцов, а подвал некоторую сводную информацию,
+                    например, сумму или среднее.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[2,7,8,21]
+                    <table>
+                    <thead>
+                        <tr>
+                            <td>Ингредиент</td>
+                            <td>ккал на 100 г.</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Арахис</td>
+                            <td>551</td>
+                        </tr>
+                        <tr>
+                            <td>Пекан</td>
+                            <td>691</td>
+                        </tr>
+                        <tr>
+                            <td>Фундук</td>
+                            <td>651</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    ```
+                    <!-- .element: data-id="table-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Таблицы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Для явного указания на то, что ячейка является заголовком, используется тег `<th>`. При этом он поддерживает
+                    атрибут `scope`, показывающий, является ли ячейка заголовком столбца (`scope="col"`) или строки (`scope="row"`).
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[4,5,10,14,18]
+                    <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Ингредиент</th>
+                            <th scope="col">ккал на 100 г.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Арахис</th>
+                            <td>551</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Пекан</th>
+                            <td>691</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Фундук</th>
+                            <td>651</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    ```
+                    <!-- .element: data-id="table-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate style="text-align: left">
+                <textarea data-template>
+                    ## Таблицы
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    
+                    Ну и куда таблица без названия :) Для указания названия таблицы можно использовать тег `<caption>`,
+                    который должен идти сразу после открывающего тега `<table>`.
+                    
+                    </div>
+
+                    <div>
+
+                    ```html[2]
+                    <table>
+                    <caption>Калорийность орехов</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Ингредиент</th>
+                            <th scope="col">ккал на 100 г.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Арахис</th>
+                            <td>551</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Пекан</th>
+                            <td>691</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Фундук</th>
+                            <td>651</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                    ```
+                    <!-- .element: data-id="table-animation" -->
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Мультимедиа
+                    
+                    Первым элементом мультимедиа в интернете были изображения. Их можно вставить с помощью тега `<img>`, у которого
+                    есть два обязательных атрибута, `src` со ссылкой на файл и `alt` с описанием изображения.
+
+                    ```html[]
+                    <img src="/images/nice-screenshot.png" alt="Красивый скриншот приложения">
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+
+                    Важно помнить, что изображение по умолчанию ведёт себя так же, как и теги для выделения фрагментов текста, т.е.
+                    если написать что-то после `<img>`, это не перенесётся на новую строку, а отрисуется рядом. Забегая вперёд, скажем,
+                    что такие элементы называются строчными.
+                    <!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Мультимедиа
+                    
+                    В современном HTML появилась встроенная возможность размещать аудио и даже видео, для этого используются теги
+                    `<audio>` и `<video>` соответственно, каждый из них задействует встроенный проигрыватель. Источник файла
+                    задаётся с помощью атрибута `src`, как и для изображений.
+                    
+                    ```html[]
+                    <audio controls src="/shared-assets/audio/t-rex-roar.mp3"></audio>
+                    <video src="videofile.ogg" autoplay poster="posterimage.jpg"></video>
+                    ```
+                    <!-- .element: data-id="text-animation" -->
+                    
+                    Поведение проигрывателя можно настраивать с помощью различных атрибутов, например, `controls`, `muted` и `autoplay`.
+                    При этом всегда стоит помнить, что внешний вид проигрывателя зависит от браузера, если нужен одинаковый UI,
+                    то придётся вернуться к специализированным библиотекам.
+                    <!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Напоследок
+
+                    Возможности HTML не ограничиваются тем, что было описано в презентации. Что мы упустили (пока что):
+
+                    * Различные поля ввода (`<input>`, `<textarea>`, `<select>` и т.д.);
+                    * Модальные окна и спойлеры;
+                    * Продвинутую работу с мультимедиа (подписи, субтитры, поддержка разных форматов).
+
+                    При желании полный список тегов с описанием можно посмотреть в MDN
+                    на [странице про элементы](https://developer.mozilla.org/ru/docs/Web/HTML/Reference/Elements).
+                    Также можно почитать [текущую версию стандарта HTML](https://html.spec.whatwg.org/dev/) (осторожно, много текста).
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    # Вопросы?
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    Изображения на слайдах 6-9 заимствованы из MDN: <p>
+                        <a href="https://developer.mozilla.org/ru/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_domain_name" target="_blank">"Что такое доменные имена"</a>, Mozilla Contributors, под лицензией <a href="https://creativecommons.org/licenses/by-sa/2.5/" target="_blank">CC-BY-SA 2.5</a>.
+                    </p>
+                </textarea>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.js" integrity="sha512-35L3EFHQcGaTZ6QN9wAg9iK1hTPVCn8RGsscuXjm5JdmDRyOw+/IWJ4wavGkozQ8VDoddD7nV1psHgu/BYNpxQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js" integrity="sha512-tDzEYXTFwGOO3tWp8oTV3yGeZ4lG4gUt+tJFQTsP7W4jV/MJ1Rgr6m9aICicjh/ymL5GD6jkHXDi9cHKfctFGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/markdown/markdown.min.js" integrity="sha512-4exkEeyVuaWUFKozXl6L3UCugl6ai1cKnrVFkWUstdrNB2sDxxmPEaHBzTlYm9wX78EjPzEBG0s8k37oPeUFIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js" integrity="sha512-xkVKkN0o7xECTHSUZ9zdsBYRXiAKH7CZ3aICpW6aQJZsufVVRLhEBTDjTpC1tPzm+gNZiOeW174zXAB2fOLsTg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+            width: 1600,
+            height: 900,
+            margin: 0.1,
+
+            slideNumber: 'c/t',
+            controls: false,
+            hash: true,
+
+            // Learn about plugins: https://revealjs.com/plugins/
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+
+</html>
