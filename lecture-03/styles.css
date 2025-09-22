@@ -1,0 +1,111 @@
+* {
+    font-family: sans-serif;
+}
+
+h1 {
+    color: red;
+    background-color: purple;
+}
+
+h2 {
+    color: #33aaff;
+}
+
+p {
+    color: #000000aa;
+    background-color: aliceblue;
+    color: hsl(113, 100%, 50%);
+    /* background-color: rgb(255, 0, 128); */
+}
+
+aside {
+    border: rgb(0, 135, 20) 2px solid;
+    border-radius: 8px;
+}
+
+.heading {
+    text-transform: uppercase;
+}
+
+.heading {
+    text-transform: lowercase;
+}
+
+h1 {
+    text-transform: capitalize;
+}
+
+#copyright {
+    text-align: center;
+}
+
+[type="text"] {
+    border-color: chocolate;
+    border-radius: 4px;
+}
+
+h1, h2 {
+    font-style: italic;
+}
+
+article {
+    font-size: 12px;
+}
+
+article p {
+    text-indent: 2rem;
+    text-align: justify;
+}
+
+article > p {
+    line-height: 2;
+    /* font-size: 32px; */
+    font-size: 1.25em;
+
+    height: calc(50vh + 25px);
+    width: 50vw;
+}
+
+aside > p {
+    font-size: 1rem;
+}
+
+aside ul {
+    font-size: 0.75rem;
+}
+
+article div ~ p {
+    color: blueviolet;
+}
+
+article div + p {
+    background-color: aquamarine;
+}
+
+article {
+    /* font-size: 3rem; */
+}
+
+article p:hover{
+    color: coral;
+}
+
+article :first-child {
+    color: red;
+}
+
+article :last-child {
+    color: deeppink;
+}
+
+article > :nth-child(2n) {
+    background-color: darkolivegreen;
+}
+
+h2::before {
+    content: '<<';
+}
+
+h2::after {
+    content: '>>';
+}
