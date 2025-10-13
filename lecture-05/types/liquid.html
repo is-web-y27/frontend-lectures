@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резиновая вёрстка</title>
+    <style>
+        * {
+            box-sizing: content-box;
+        }
+
+        body {
+            font-size: 20px;
+            font-family: sans-serif;
+
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header,
+        article,
+        aside,
+        footer {
+            margin: 32px;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: #0000002e 5px 5px 5px 0;
+        }
+
+        header {
+            height: 160px;
+            background-color: red;
+        }
+
+        footer {
+            height: 160px;
+            background-color: blue;
+        }
+
+        article {
+            float: left;
+            min-height: 400px;
+            width: calc(60% - 64px);
+            background-color: darkgreen;
+            color: white;
+        }
+
+        aside {
+            float: left;
+            min-height: 300px;
+            width: calc(30% - 128px);
+            background-color: gold;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <header></header>
+    <main>
+        <article>
+            <h2>My Article</h2>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio illo, eaque ullam veritatis provident qui
+                est sequi cupiditate dolores architecto quaerat vitae consequatur nostrum fugit accusantium repudiandae!
+                Unde, explicabo omnis.</p>
+        </article>
+        <aside></aside>
+        <div class="clearfix"></div>
+    </main>
+    <footer></footer>
+</body>
+
+</html>

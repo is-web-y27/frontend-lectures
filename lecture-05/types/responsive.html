@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывчивая вёрстка</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-size: 20px;
+            font-family: sans-serif;
+
+            display: grid;
+            grid-template-areas: 
+            "h h h"
+            "ar ar as" 
+            "f f f";
+            grid-template-rows: 224px 1fr 224px;
+            grid-template-columns: repeat(3, 1fr);
+
+            min-height: 95vh;
+        }
+
+        header, article, aside, footer {
+            margin: 32px;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: #0000002e 5px 5px 5px 0;
+        }
+
+        header {
+            grid-area: h;
+            background-color: red;
+        }
+
+        footer {
+            grid-area: f;
+            background-color: blue;
+        }
+
+        main {
+            display: contents;
+        }
+
+        article {
+            grid-area: ar;
+            background-color: darkgreen;
+            color: white;
+        }
+
+        aside {
+            grid-area: as;
+            background-color: gold;
+        }
+
+        @media screen and (max-width: 960px) {
+            body {
+                grid-template-areas: 
+                "h h h"
+                "ar ar ar" 
+                "as as as"
+                "f f f";
+                grid-template-rows: 224px min-content min-content 224px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header></header>
+    <main>
+        <article>
+            <h2>My Article</h2>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odio illo, eaque ullam veritatis provident qui est sequi cupiditate dolores architecto quaerat vitae consequatur nostrum fugit accusantium repudiandae! Unde, explicabo omnis.</p>
+        </article>
+        <aside></aside>
+    </main>
+    <footer></footer>
+</body>
+</html>
