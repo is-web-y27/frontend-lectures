@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 2. Семантика и доступность</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css" integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" integrity="sha512-0AUO8B5ll9y1ERV/55xq3HeccBGnvAJQsVGitNac/iQCLyDTGLUBMPqlupIWp/rJg0hV3WWHusXchEIdqFAv1Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" integrity="sha512-NJYOiL4HPnu7QvvGcvHAnVVz2X6qWcTDAH4x3fmUOW/SGUbK46IbzHhQ1KoKDfK2trs5RwUu03Ax9sxjqz1iQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" integrity="sha512-NJYOiL4HPnu7QvvGcvHAnVVz2X6qWcTDAH4x3fmUOW/SGUbK46IbzHhQ1KoKDfK2trs5RwUu03Ax9sxjqz1iQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --r-heading-font: "Source Sans 3", sans-serif;
+            --r-main-font: "Source Sans 3", sans-serif;
+            --r-code-font: "Jetbrains Mono", monospace;
+        }
+
+        .reveal pre code {
+            max-height: 700px;
+        }
+
+        .reveal section.small-code pre code {
+            max-height: 400px;
+        }
+
+        .reveal blockquote {
+            width: 80%;
+        }
+
+        kbd {
+            padding: .2rem .4rem;
+            font-size: 87.5%;
+            color: #fff;
+            background-color: #212529;
+            border-radius: .2rem;
+            font-family: var(--r-code-font);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-markdown>
+                <textarea data-template>
+                    # Семантика и доступность
+                    
+                    Разработка интерфейсов для всех-всех-всех
+                </textarea>
+            </section>
+            <section data-markdown data-visibility="hidden" style="text-align: left">
+                <textarea data-template>
+                    ## План лекции
+
+                    Тайминг: 0:35
+
+                    - Постановка проблемы
+                        - Не у всех есть возможность использовать экран для работы (слабовидящие и незрячие)
+                        - Не у всех есть желание или возможность использовать для работы мышь
+                    - Решение проблемы: работа с accessibility
+                        - Что такое доступность
+                        - Использование семантики
+                        - Структурирование документа в целом и текста в частности
+                        - Использование стандартных элементов управления
+                        - WAI-ARIA
+                        - Доступность мультимедиа
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## О чём речь?
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+                    Когда мы создаём веб-ресурсы, то часто делаем акцент на том, как будут выглядеть страницы. При этом то, как страница выглядит,
+                    не всегда совпадает с тем, какая смысловая нагрузка вложена в разметку.
+
+                    Для большинства это не представляет особой проблемы, но если вы делаете ресурс не только для себя, то **всегда** будут пользователи с ОВЗ.
+                    </div>
+
+                    <div>
+
+                    ```html[]
+                    <style>
+                        .btn {
+                            padding: 8px; 
+                            background-color: aquamarine; 
+                            border-color: blue; 
+                            border-width: 0; 
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 1.5rem; 
+                            font-family: var(--r-main-font);
+                        }
+                    </style>
+
+                    <span class="btn">Я кнопка!</span>
+                    <button class="btn">Нет, я кнопка!</button>
+                    ```
+
+                    <div style="text-align: center;">
+                    <span style="padding: 8px; background-color: aquamarine; border-color: blue; border-width: 0; border-radius: 4px; cursor: pointer; font-size: 1.5rem; font-family: var(--r-main-font);">Я кнопка!</span>
+                    <button style="padding: 8px; background-color: aquamarine; border-color: blue; border-width: 0; border-radius: 4px; cursor: pointer; font-size: 1.5rem; font-family: var(--r-main-font);">Нет, я кнопка!</button>
+                    </div>
+                    </div>
+
+                    </div>
+
+                    
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Доступность в социальном контексте
+
+                    Когда мы говорим про доступность, то мы в том числе всегда говорим про барьеры, с которыми сталкиваются пользователи с ОВЗ.
+
+                    **Барьером** называется некоторое препятствие, которое мешает человеку с ОВЗ что-то использовать.
+                    В случае веб-разработки *что-то* — это наш сайт.
+
+                    Чтобы убирать как можно большее количество барьеров, нужно в целом помнить, что особенности могут быть разными: зрительными,
+                    аудиальными, речевыми, моторными, неврологическими и когнитивными. Не все барьеры относятся именно к разработке, например,
+                    обратная связь только по электронной почте будет барьером для пользователя с нарушениями моторно-двигательного аппарата.
+                    <!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Доступный веб и семантика
+
+                    Что для обеспечения доступности можно применять в современной веб-разработке?
+
+                    * Использование атрибутов ARIA;
+                    * Семантический HTML и правильная разметка текста;
+                    * Следование WCAG.
+
+                    Первые две технологии задействуют понятие семантики. **Семантика** в контексте веб-разработки — передача смысла тех или иных
+                    фрагментов документа.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Теги `<div>` и `<span>`
+
+                    Есть два тега, которые по умолчанию не несут в себе особой семантики. Это теги `<div>` (для выделения блоков на странице) 
+                    и `<span>` (для выделения фрагментов внутри текста).
+
+                    У них две функции:
+
+                    * Выделение блоков и фрагментов, которые необходимо стилизовать без добавления семантики;
+                    * Добавление семантики с помощью ARIA.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Атрибуты ARIA
+
+                    **Accessible Rich Internet Applications** (ARIA) — это набор атрибутов, расширяющих HTML для создания более доступных
+                    интерфейсов за счёт добавления семантики. Исторически ARIA появился раньше HTML5, в 2008 году.
+
+                    <div class="fragment">
+
+                    ARIA позволяет явно задать три характеристики элемента:
+
+                    * **Роль** — для чего элемент используется;
+                    * **Состояние** — в каком состоянии (внезапно) находится элемент;
+                    * **Свойства** — дополнительные функции элемента.
+
+                    При этом атрибуты никак не влияют ни на функциональность элементов, ни на их внешний вид.
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-роли
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    ARIA-роль задаётся элементу с помощью атрибута `role`. Роли делятся на несколько типов.
+
+                    Один из типов ролей — роли виджетов. **Виджетами** называются интерактивные элементы, с которыми пользователь может взаимодействовать.
+                    Примеры виджетов:
+
+                    * `button`
+                    * `checkbox`
+                    * `progressbar`
+                    * `slider`
+                    * `tab`
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <div
+                        role="progressbar" 
+                        aria-valuemin="0"
+                        aria-valuemax="100" 
+                        aria-valuenow="15">
+                        Текущий прогресс: 15/100
+                    </div>
+
+                    <span 
+                        role="checkbox"
+                        tabindex="0"
+                        aria-checked="false"
+                        aria-labelledby="should-notify">
+                    </span>
+                    <span id="should-notify">
+                        Уведомить об успешном окончании
+                    </span>
+                    
+                    <div 
+                        role="button"
+                        tabindex="0">
+                        Прервать операцию
+                    </div>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-роли
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Роли виджетов могут быть **составными**. В таких виджетах должны содержаться другие виджеты, чаще всего с конкретной ролью.
+                    К таким виджетам относят:
+
+                    * `menu`
+                    * `grid`
+                    * `tree`
+                    * `tablist`
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <div>
+                        <button 
+                            id="menubutton" 
+                            aria-haspopup="true" 
+                            aria-controls="menu">
+                            Оглавление страницы
+                        </button>
+                        <ul id="menu" role="menu">
+                            <li role="presentation">
+                                <a role="menuitem" href="#">
+                                    Описание
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" href="#">
+                                    Примеры
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" href="#">
+                                    См. также
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-роли
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Отдельно выделяются роли ориентиров. **Ориентирами** называются части страницы, по которым можно быстро перемещаться с помощью
+                    вспомогательных технологий. Примеры ориентиров:
+
+                    * `banner`
+                    * `main`
+                    * `contentinfo`
+                    * `navigation`
+                    * `search`
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <div role="banner">
+                        <div role="navigation">
+                            <div role="list">
+                                <div role="listitem">
+                                    <a href="https://ya.ru">
+                                        Известная контора
+                                    </a>
+                                </div>
+                                <div role="listitem">
+                                    <a href="https://itmo.ru">
+                                        Ещё одна контора
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="main">
+                        Важный контент
+                    </div>
+                    <div role="contentinfo">
+                        &copy; Рога и Копыта, 2025
+                    </div>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-роли
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Выделяют роли структуры документа, описывающие структуру страницы и отдельных фрагментов. Примеры:
+
+                    * `article`
+                    * `caption`
+                    * `code`
+                    * `feed`
+                    * `heading`
+                    * `list`
+                    * `paragraph`
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <div role="main">
+                        <div role="feed">
+                            <div role="article">
+                                <div role="heading">
+                                    Основы языка JavaScript
+                                </div>
+                                <div role="paragraph">
+                                    Самое простое использование
+                                    JS не требует установки
+                                    дополнительного ПО,
+                                    достаточно браузера.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-роли
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    Ещё одна интересная группа ролей — роли изменяющихся областей. **Изменяющейся областью** называется часть страницы,
+                    которая динамически обновляется и изменяется. Такие роли нужны для более удобного оповещения пользователей о каких-то
+                    изменениях без необходимости переходить к самому элементу. Примеры:
+
+                    * `log`
+                    * `status`
+                    * `timer`
+                    * `alert`
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <div role="main">
+                        <div role="log">
+                            Получаем конфигурацию...
+                            Проверяем её на корректность...
+                            Применяем её на узле 1...
+                            Применяем её на узле 2...
+                            Применяем её на узле 3...
+                            
+                            Готово!
+                        </div>
+                        <div role="status">
+                            Операция успешно завершена
+                        </div>
+                    </div>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-роли
+
+                    Ещё две группы ролей мы оставим без примеров:
+
+                    * Роли для всплывающих и диалоговых окон (их всего две, `dialog` и `alertdialog`).
+
+                    * Абстрактные роли. Эти роли не используются разработчиками и нужны для поддержки иерархии других ролей.
+                      Например, роли ориентиров "наследуются" от абстрактной роли `landmark`.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Дерево доступности
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                    
+                    <div>
+
+                    По этим ролям для средств доступности создаётся отдельное представление страницы, упрощающее работу с ней.
+                    Такое представление называется **деревом доступности**, а каждый узел в этом дереве&nbsp;— **объектом доступности**.
+
+                    <div class="fragment">
+
+                    Дерево доступности не является полной копией DOM, хоть и строится параллельно с ним: в него не включаются скрытые через
+                    `visibility` и `display` элементы. Также к нему нет прямого доступа через JS, только через специальный Accessibility API
+                    операционных систем.
+
+                    </div>
+                    </div>
+                    
+                    <div>
+
+                    ![Пример дерева доступности для my.itmo.ru](images/accessibility-tree.png)
+
+                    </div>
+
+                    </div>
+
+                    
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-атрибуты
+
+                    Атрибутов, улучшающих доступность, тоже много, и они тоже делятся на несколько групп:
+
+                    * Глобальные атрибуты, которые можно применить ко всем элементам;<!-- .element: class="fragment" -->
+                    * Атрибуты виджетов (интерактивных элементов);<!-- .element: class="fragment" -->
+                    * Атрибуты изменяющихся областей;<!-- .element: class="fragment" -->
+                    * Атрибуты связи элементов.<!-- .element: class="fragment" -->
+
+                    Среди них есть как свойства, так и состояния. При этом атрибуты не обязаны быть исключительно в одной группе.
+                    Посмотрим распространённые атрибуты :)<!-- .element: class="fragment" -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-атрибуты
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    **Глобальные атрибуты** можно встретить чаще всего, так как они применяются к элементам с любыми ролями.
+
+                    * `aria-label` и `aria-description` задают краткое и полное описание элемента;
+                    * `aria-labelledby` и `aria-describedby` задают элементы, в которых есть описание текущего элемента;
+                    * `aria-busy` показывает, что элемент изменяется.
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <div role="feed" aria-busy="true">
+                        <span>Загружаем ленту...</span>
+                    </div>
+                    <button aria-label="Обновить ленту">
+                        &circlearrowright;
+                    </button>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## ARIA-атрибуты
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                    <div>
+
+                    **Атрибуты виджетов** часто применяются для полей ввода, но про прочие интерактивные элементы тоже
+                    не стоит забывать. У части из них есть альтернативы в самом HTML, например:
+
+                    * `aria-required`;
+                    * `aria-readonly`;
+                    * `aria-disabled`;
+                    * `aria-checked`;
+                    * `aria-placeholder`.
+
+                    При этом оригинальные HTML-атрибуты (тот же `readonly`) перезаписывают значения ARIA-атрибутов.
+                    
+                    </div>
+                    <div>
+
+                    ```html[]
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        aria-label="Электронная почта"
+                        placeholder="john@example.com"
+                        aria-placeholder="john@example.com"
+                    >
+                    <input
+                        type="password"
+                        name="password"
+                        id="passwd"
+                        aria-label="Пароль"
+                        aria-describedby="hint"
+                    >
+                    <span id="hint">
+                        Пароль должен содержать хотя бы
+                        20 символов, в том числе заглавные
+                        и строчные буквы, цифры, спецсимволы,
+                        рог единорога...
+                    </span>
+                    <input 
+                        type="checkbox"
+                        checked="false"
+                        aria-checked="false"
+                        aria-labelledby="should-notify">
+                    </input>
+                    <span id="should-notify">
+                        Согласен на всё
+                    </span>
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Семантический HTML как средство доступности
+
+                    Несмотря на наличие ARIA, семантический HTML — самое простое и самое мощное средство доступности веб-ресурсов. Почему же?
+
+                    <div class="fragment">
+
+                    Его магия заключается в том, что каждый семантический тег имеет заранее заданную ARIA-роль.
+
+                    Из этого же следует, что при наличии стандартного тега с нужной ролью и функциональностью лучше использовать его,
+                    а не `div` с явно заданной ролью.
+
+                    </div>
+
+                    <div class="fragment">
+
+                    Если вам хочется использовать готовую библиотеку компонентов, обращайте внимание, поддерживает ли эта библиотека ARIA для
+                    нестандартных элементов, это также повысит доступность страницы.
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate>
+                <textarea data-template>
+                    ```html[]
+                    <header>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a href="https://ya.ru">Известная контора</a>
+                                </li>
+                                <li>
+                                    <a href="https://itmo.ru">Ещё одна контора</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </header>
+                    <main>
+                        <div role="log">Здесь будут логи обработки заданий...</div>
+                    </main>
+                    <footer>
+                        <p>&copy; Рога и Копыта, 2025</p>
+                    </footer>
+                    ```
+
+                    Пример использования семантического HTML. Основная часть элементов с ролями заменилась на семантические
+                </textarea>
+            </section>
+            <section data-markdown data-auto-animate>
+                <textarea data-template>
+                    ```html[14]
+                    <header>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a href="https://ya.ru">Известная контора</a>
+                                </li>
+                                <li>
+                                    <a href="https://itmo.ru">Ещё одна контора</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </header>
+                    <main>
+                        <div role="log">Здесь будут логи обработки заданий...</div>
+                    </main>
+                    <footer>
+                        <p>&copy; Рога и Копыта, 2025</p>
+                    </footer>
+                    ```
+
+                    Обратите внимание, что не для всех ролей есть семантический тег
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left" class="small-code">
+                <textarea data-template>
+                    ## Семантический HTML как средство доступности
+
+                    Правильно размечать стоит не только основные блоки страницы, но и сам текст.
+                    Здесь будет два примера оформления текста, хороший и плохой :)
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr">
+
+                    <div>
+
+                    ```html[]
+                    <h1>Мой заголовок</h1>
+
+                    <p>Это первый раздел моей страницы.</p>
+
+                    <p>Я добавлю ещё один параграф тут.</p>
+
+                    <ol>
+                        <li>Это</li>
+                        <li>список для</li>
+                        <li>чтения</li>
+                    </ol>
+
+                    <h2>Мой подзаголовок</h2>
+
+                    <p>
+                        Это первый подраздел моей страницы.
+                        Я бы хотела, чтобы люди могли найти
+                        этот контент!
+                    </p>
+
+                    <h2>Мой второй подзаголовок</h2>
+
+                    <p>
+                        Это второй подраздел. Думаю, он 
+                        намного интереснее, чем предыдущий.
+                    </p>
+                    ```
+
+                    </div>
+
+                    <div>
+
+                    ```html[]
+                    <font size="7">Мой заголовок</font>
+                    <br /><br />
+                    Это первый раздел моей страницы.
+                    <br /><br />
+                    Я добавлю ещё один параграф тут.
+                    <br /><br />
+                    1. Это
+                    <br /><br />
+                    2. список для
+                    <br /><br />
+                    3. чтения
+                    <br /><br />
+                    <font size="5">Мой подзаголовок</font>
+                    <br /><br />
+                    Это первый подраздел моей страницы. 
+                    Я бы хотела, чтобы люди могли найти
+                    этот контент!
+                    <br /><br />
+                    <font size="5">Мой второй подзаголовок</font>
+                    <br /><br />
+                    Это второй подраздел. Думаю, он 
+                    намного интереснее, чем предыдущий.
+                    ```
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Рекомендации WCAG
+
+                    В конце пару слайдов посвятим WCAG. **Web Content Accessibility Guidelines** —
+                    это набор рекомендаций о том, что нужно принимать во внимание при разработке интерфейсов,
+                    в том числе доступных.
+
+                    Если покопаться чуть глубже, WCAG даёт рекомендации не только для веб-контента,
+                    но в целом для различных цифровых продуктов (например, PDF).
+
+                    WCAG состоит из нескольких частей:
+
+                    * Основные принципы устройства цифровых продуктов;
+                    * Руководства, раскрывающие основные принципы;
+                    * Критерии успешности, показывающие достижение основных принципов;
+                    * Разбор критериев с их подробным описанием, техниками достижения и ошибками.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Принципы WCAG
+
+                    Основных принципа WCAG четыре:
+
+                    1. Воспринимаемость — интерфейс можно воспринимать разными органами чувств;
+                    2. Управляемость — с интерфейсом можно взаимодействовать разными способами;
+                    3. Понятность — интерфейс и содержимое легко можно понять, в том числе легко понять способы взаимодействия;
+                    4. Устойчивость — интерфейс работает на разных устройствах, в разных браузерах и с разными технологиями доступности.
+
+                    Они звучат достаточно просто, но обеспечить полное соответствие им сложно. Уровней соответствия всего три, A, AA и AAA,
+                    но на практике стараются достичь только AA.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Пример критерия WCAG
+
+                    Для лучшего понимания, что требуется в WCAG, можно почитать [список критериев WCAG](https://www.w3.org/WAI/WCAG22/quickref/)
+                    и [список техник WCAG](https://www.w3.org/WAI/WCAG22/Techniques/). Мы для примера рассмотрим один критерий.
+
+                    Существует [критерий 1.4.2](https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html)
+                    про элементы управления воспроизведением. Он звучит так:
+
+                    > Если какой-то аудиофайл длительностью более 3 секунд воспроизводится автоматически, должна
+                    быть возможность остановить его, либо должна быть возможность настроить громкость аудиофайла
+                    независимо от общесистемных настроек.
+
+                    Здесь 1 — номер принципа (воспринимаемость), 4 — номер руководства (различаемость контента), 2 — номер критерия.
+                    По ссылке выше есть подробное описание критерия, в том числе обоснование его необходимости.
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    ```html
+                    <video poster="myvideo.png" controls>
+                        <source src="myvideo.mp4" srclang="en" type="video/mp4">
+                        <source src="myvideo.webm" srclang="fr" type="video/webm">
+                        <track kind="descriptions" label="English" src="myvideo-en.vtt" srclang="en">
+                        <track kind="descriptions" label="Français" src="myvideo-fr.vtt" srclang="fr">
+                    </video>
+                    ```
+
+                    А это пример выполнения [критерия 1.2.2](https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html)
+                    (наличие субтитров для аудио) с помощью [техники H95](https://www.w3.org/WAI/WCAG22/Techniques/html/H95)
+                    (использование элемента `<track>` для субтитров)
+                    
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    # Вопросы?
+                </textarea>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.js" integrity="sha512-35L3EFHQcGaTZ6QN9wAg9iK1hTPVCn8RGsscuXjm5JdmDRyOw+/IWJ4wavGkozQ8VDoddD7nV1psHgu/BYNpxQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js" integrity="sha512-tDzEYXTFwGOO3tWp8oTV3yGeZ4lG4gUt+tJFQTsP7W4jV/MJ1Rgr6m9aICicjh/ymL5GD6jkHXDi9cHKfctFGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/markdown/markdown.min.js" integrity="sha512-4exkEeyVuaWUFKozXl6L3UCugl6ai1cKnrVFkWUstdrNB2sDxxmPEaHBzTlYm9wX78EjPzEBG0s8k37oPeUFIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js" integrity="sha512-xkVKkN0o7xECTHSUZ9zdsBYRXiAKH7CZ3aICpW6aQJZsufVVRLhEBTDjTpC1tPzm+gNZiOeW174zXAB2fOLsTg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+            width: 1600,
+            height: 900,
+            margin: 0.1,
+
+            slideNumber: 'c/t',
+            controls: false,
+            hash: true,
+
+            // Learn about plugins: https://revealjs.com/plugins/
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+
+</html>
