@@ -1,0 +1,36 @@
+html {
+    font-family: sans-serif;
+}
+
+body {
+    max-width: 980px;
+    margin: auto;
+}
+
+main {
+    display: flex;
+    gap: 16px;
+    margin-top: 64px;
+
+    overflow-x: scroll;
+    scroll-snap-type: x proximity;
+}
+
+main > section {
+    width: 640px;
+    height: 360px;
+    padding: 16px;
+    flex-shrink: 0;
+    background-color: blue;
+    color: white;
+    text-align: center;
+
+    scroll-snap-align: center;
+
+    transition: ease-in 250ms;
+
+    &:nth-of-type(2):hover {
+        filter: hue-rotate(30deg) blur(1px);
+        transform: skewX(-5deg);
+    }
+}
