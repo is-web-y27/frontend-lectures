@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-компоненты на пальцах</title>
+    <script src="alert-button.js"></script>
+    <script src="custom-card.js" defer></script>
+</head>
+<body>
+    <form action="">
+        <h3>Заполните форму ниже</h3>
+        <input type="color" name="bgColor">
+        <input type="datetime-local" name="publishDate">
+        <input type="text">
+        <input type="submit" value="Отправить">
+    </form>
+
+    <info-card id="card" title="Красивая карточка">
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Beatae, soluta.</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum facere aperiam molestias fuga maxime sit.</p>
+    </info-card>
+    <info-card id="card" title="Красивая карточка">
+        <span slot="author">Nikolai Andreev</span>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Beatae, soluta.</p>
+        <ul>
+            <li>One</li>
+            <li>Two</li>
+            <li>Three</li>
+        </ul>
+    </info-card>
+    <button is="alert-button" message="Привет, мир!">Показать сообщение</button>
+
+    <template id="cardTemplate">
+        <link rel="stylesheet" href="custom-card.css">
+        <section>
+            <h3></h3>
+            <p><b>
+                <slot name="author">Abobus</slot>
+            </b></p>
+            <slot></slot>
+        </section>
+    </template>
+
+    <script>
+        console.log(card.shadowRoot);
+    </script>
+</body>
+</html>

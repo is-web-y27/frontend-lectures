@@ -1,0 +1,11 @@
+h3 {
+    color: darkred;
+}
+
+section {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    border: 2px darkred solid;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 8px;
+}
