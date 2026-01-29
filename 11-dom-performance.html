@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Лекция 11. Объектная модель документа. Стадии отрисовки документа</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css" integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" integrity="sha512-0AUO8B5ll9y1ERV/55xq3HeccBGnvAJQsVGitNac/iQCLyDTGLUBMPqlupIWp/rJg0hV3WWHusXchEIdqFAv1Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" integrity="sha512-NJYOiL4HPnu7QvvGcvHAnVVz2X6qWcTDAH4x3fmUOW/SGUbK46IbzHhQ1KoKDfK2trs5RwUu03Ax9sxjqz1iQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" integrity="sha512-NJYOiL4HPnu7QvvGcvHAnVVz2X6qWcTDAH4x3fmUOW/SGUbK46IbzHhQ1KoKDfK2trs5RwUu03Ax9sxjqz1iQw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --r-heading-font: "Source Sans 3", sans-serif;
+            --r-main-font: "Source Sans 3", sans-serif;
+            --r-code-font: "Jetbrains Mono", monospace;
+        }
+
+        .reveal pre code {
+            max-height: 800px;
+        }
+
+        .reveal blockquote {
+            width: 80%;
+            border-left: #212529 4px solid;
+            padding-left: 24px;
+            box-shadow: 8px 8px 16px rgb(0 0 0 / 21%);
+        }
+
+        kbd {
+            padding: .2rem .4rem;
+            font-size: 87.5%;
+            color: #fff;
+            background-color: #212529;
+            border-radius: .2rem;
+            font-family: var(--r-code-font);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-markdown>
+                <textarea data-template>
+                    # Объектная модель документа. Стадии отрисовки документа
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Объектная модель документа
+
+                    Основной задачей браузерного JS является работа со страницей. При этом сама по себе страница — это простой текст.
+                    Из этого возникает вопрос, как организовать **удобную** работу с содержимым страницы, при этом не перелопачивая
+                    весь документ заново.
+
+                    Ответ нашёлся достаточно быстро: так как любой HTML-документ является вложенной структурой, его можно представить
+                    в виде дерева. Не сразу эта идея превратилась в единый стандарт (тут можно почитать про
+                    [войны браузеров](https://en.wikipedia.org/wiki/Browser_wars)), но к середине нулевых большинство популярных
+                    движков начали поддерживать спецификацию для работы с документом через **его объектную модель (Document Object Model, DOM)**.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Объектная модель документа
+
+                    DOM представляет из себя API для работы с различными элементами страницы. Как написано в самом стандарте:
+
+                    > DOM defines a platform-neutral model for events, aborting activities, and node trees.
+
+                    В этот раз мы посмотрим работу с самим деревом и его узлами, а также событиями. Формально API содержит функциональность
+                    не только для дерева с узлами, событий и прерывания обработчиков, но это настолько редко используемые возможности, что лучше не надо.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Дерево DOM
+
+                    Формально дерево DOM состоит из узлов 12 типов, но часть из них устарела, часть не используется в HTML, поэтому на практике
+                    можно встретить следующие типы узлов:
+
+                    | Тип узла           | Класс              | Числовое значение                  |
+                    | ------------------ | ------------------ | ---------------------------------- |
+                    | Элемент            | `Element`          | `Node.ELEMENT_NODE = 1`            |
+                    | Атрибут            | `Attr`             | `Node.ATTRIBUTE_NODE = 2`          |
+                    | Текст              | `Text`             | `Node.TEXT_NODE = 3`               |
+                    | Комментарий        | `Comment`          | `Node.COMMENT_NODE = 8`            |
+                    | Документ           | `Document`         | `Node.DOCUMENT_NODE = 9`           |
+                    | Тип документа      | `DocumentType`     | `Node.DOCUMENT_TYPE_NODE = 10`     |
+                    | Фрагмент документа | `DocumentFragment` | `Node.DOCUMENT_FRAGMENT_NODE = 11` |
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    ![](https://developer.mozilla.org/shared-assets/images/diagrams/api/dom/tree-structure.svg)
+
+                    Пример дерева DOM
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Получение узла дерева DOM
+
+                    Чтобы начать работать с деревом DOM, нужно получить какой-нибудь узел из него. Достаточно очевидный способ — получить корень дерева,
+                    для этого есть глобальный объект `document`.
+
+                    Чаще для получения конкретных элементов используются специальные методы:
+
+                    * `getElementById`, если известен идентификатор элемента (атрибут `id`);
+                    * `getElementByTagName`, если нужно взять все элементы с конкретным тегом;
+                    * `getElementByName`, если известно название элемента (атрибут `name`);
+                    * `getElementByClassName`, если известен класс элемента (атрибут `class`)
+                    * `querySelector`, если нужно взять один элемент (обычно первый), попадающий под CSS-селектор;
+                    * `querySelectorAll`, если нужно взять все элементы, попадающие под CSS-селектор.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Получение узла дерева DOM
+
+                    Браузеры поддерживают следующий трюк: для каждого элемента, у которого есть ID, название или класс,
+                    создаётся глобальная переменная (поле объекта `window`) с таким же названием, как и
+                    ID/название элемента/класс:
+
+                    ```html
+                    <section name="product-card">
+                        <button id="buy_btn">Купить</button>
+                    </section>
+
+                    <script>
+                        console.log(buy_btn);
+                        console.log(window['product-card']);
+                    </script>
+                    ```
+
+                    Так делать можно, но крайне не рекомендуется, поскольку при изменении этих атрибутов название переменных
+                    тоже меняется, плюс появляется проблема с перезаписыванием других глобальных переменных. Используйте методы :)
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Навигация по дереву
+
+                    Получив нужный узел, можно двигаться по дереву в разные стороны. Если текущий узел лежит в `el`, то:
+
+                    * Его родителя можно получить с помощью `el.parentNode`;
+                    * Его предыдущего и следующего соседа можно получить с помощью `el.previousSibling` и `el.nextSibling`;
+                    * Его прямых потомков (детей) можно получить с помощью `el.childNodes`, а первого и последнего — с помощью
+                      `el.firstChild` и `el.lastChild` соответственно.
+
+                    Особенность этих свойств: они возвращают узлы абсолютно всех типов (включая тексты, комментарии и пр.).
+                    Иногда это бывает проблемой, а если брать в расчёт, что пробелы и переносы строк тоже являются узлами...
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Навигация по дереву
+
+                    Чаще всего нужна навигация только по элементам, для этого тоже есть свойства:
+
+                    * `parentElement` для родителя-элемента;
+                    * `previousElementSibling` и `nextElementSibling` для соседей-элементов;
+                    * `children`, `firstElementChild` и `lastElementChild` для детей-элементов.
+
+                    ```html
+                    <main>
+                        <section>Раз</section>
+                        <section>Два</section>
+                        <section>Три</section>
+                    </main>
+
+                    <script>
+                        const main = document.querySelector('main');
+                        for (const element of main.children) {
+                            console.log(element);
+                        }
+                    </script>
+                    ```
+
+                    Важно помнить, что всё это (в т.ч. предыдущий слайд) — именно свойства, т.е. их нельзя изменить напрямую.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Ещё свойства узлов
+
+                    Узлы хранят не только ссылки на другие элементы, но и другие полезные свойства:
+
+                    * `el.innerText` и `el.outerText` получают текст внутри элемента без тегов (даже если они вложены в элемент);
+                    * `el.innerHTML` и `el.outerHTML` получают текст с тегами, первый без внешнего, второй с внешним.
+
+                    Эти свойства уже можно изменять:
+
+                    ```html
+                    <section>
+                        <p class="abstract">Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, labore.</p>
+                    </section>
+
+                    <script>
+                        const abstract = document.getElementsByClassName('abstract')[0];
+                        abstract.innerHTML = 'Lorem <b>ipsum</b> dolor sit amet.'
+                    </script>
+                    ```
+
+                    При этом, конечно, злоупотреблять вставкой сырой HTML-разметки не стоит.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Создание узлов дерева
+
+                    Элементы можно не только получать из существующего дерева, но и создавать новые. Создание и непосредственно вставка —
+                    разные вещи, поэтому сначала посмотрим на создание.
+
+                    Элемент создаётся с помощью `document.createElement(tag)`:
+
+                    ```html
+                    <script>
+                        const el = document.createElement('section');
+                        el.className = 'card';
+                        el.innerHTML = '<h3>Тариф Pro</h3><p><s>500</s><b>300</b> рублей в месяц</p>';
+                    </script>
+                    ```
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Редактирование дерева
+
+                    Основной интерактив на странице всё-таки связан с её изменением. Есть несколько подборок методов той или иной
+                    степени актуальности:
+
+                    * `document.write(html)` добавляет разметку на страницу, полезен только во время загрузки;
+                    * `parent.appendChild(node)` добавляет узел в качестве последнего ребёнка у родителя;
+                    * `parent.insertBefore(node, nextSibling)` добавляет узел перед соседом;
+                    * `parent.removeChild(node)` удаляет элемент у родителя;
+                    * `parent.replaceChild(newElem, node)` заменяет элемент в родителе.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Редактирование дерева
+
+                    * `el.append(nodes)` — добавляет узлы или строки в конец `el`,
+                    * `el.prepend(nodes)` — вставляет узлы или строки в начало `el`,
+                    * `el.before(nodes)` — вставляет узлы или строки до `el`,
+                    * `el.after(nodes)` — вставляет узлы или строки после `el`,
+                    * `el.replaceWith(nodes)` — заменяет `el` заданными узлами или строками;
+                    * `el.remove()` — удаляет `el`.
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    ## Стадии отрисовки документа
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Критический путь рендеринга
+
+                    Когда HTML-страница в виде текста начинает загружаться браузером, ему необходимо преобразовать это представление
+                    вместе с ресурсами в итоговую страницу. Тот процесс, который происходит от начала разбора страницы до её полной
+                    отрисовки, называется **критическим путём рендеринга (CRP)**.
+
+                    В CRP обычно выделяются следующие шаги (не совсем последовательные):
+
+                    * Загрузка страницы и определение её кодировки (не совсем относится к CRP);
+                    * Токенизация (лексический анализ) и построение дерева DOM;
+                    * Выполнение JS-скриптов, блокирующих отрисовку;
+                    * Загрузка дополнительных ресурсов;
+                    * Построение CSSOM и дерева отрисовки;
+                    * Компоновка, отрисовка и композитинг.
+
+                    Посмотрим эти шаги чуть подробнее и опишем их влияние на производительность.
+
+                    <!-- Сделать красивую схему -->
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Загрузка страницы
+
+                    Процесс загрузки страницы сам по себе в целом достаточно понятный, но в нём нужно выделить пару моментов:
+
+                    * Обработка страницы идёт параллельно с её загрузкой, т.е. браузер не ждёт, пока загрузится весь документ,
+                      чтобы обрабатывать его.
+                    
+                    * При этом частой рекомендацией является загрузка первого килобайта целиком для определения кодировки страницы
+                      (поэтому соответствующий тег `<meta>` нужно ставить как можно ближе к началу страницы).
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Токенизация
+
+                    Поскольку HTML — язык с формальной грамматикой, текст на этом языке можно преобразовать в набор токенов
+                    (минимальных языковых единиц, несущих смысловую нагрузку). Процесс преобразования называется **токенизацией**.
+
+                    Токенизация HTML — одновременно простой и сложный процесс. Простой, поскольку может быть описан машиной состояний.
+                    Сложный, поскольку в машине 80 состояний :) Желающие могут почитать
+                    [соответствующий фрагмент спецификации W3](https://html.spec.whatwg.org/multipage/parsing.html).
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Токенизация
+
+                    В общих чертах, на выходе токенизатора может быть последовательность из нескольких (может и нуля) токенов
+                    следующих типов:
+
+                    * DOCTYPE;
+                    * Открывающий тег;
+                    * Закрывающий тег;
+                    * Комментарий;
+                    * Символ;
+                    * Конец файла.
+
+                    Мы как пользователи браузера и как веб-разработчики не можем посмотреть, как выглядят эти токены, и не можем
+                    управлять их созданием, однако мы можем менять содержимое HTML-документа, что приводит к генерации новых токенов.
+
+                    N.B. Информация об атрибутах тегов содержится в открывающем теге.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Построение дерева DOM
+
+                    Вместе с токенизацией браузер строит дерево DOM. Схема устроена таким образом, что токенизатор обрабатывает
+                    поток байт и возвращает поток токенов, а для построения дерева нужен поток токенов. Это значит, что для токенизации
+                    не нужно загружать весь документ, а для построения дерева не нужно токенизировать весь входной поток.
+
+                    Если HTML-документ размечен верно, то дерево на выходе будет совпадать с потоком токенов. Но именно на этом этапе
+                    браузер пытается исправить часть ошибок, которые могут допускать разработчики. Часть из них — поддержка устаревшего
+                    поведения, а некоторые из них происходят по невнимательности.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Построение дерева DOM
+                    
+                    Что исправляется на этапе построения дерева:
+
+                    * Отсутствующие теги `<html>`, `<head>` и `<body>`;
+                    * Пропущенный закрытый тег `<p>` перед блочным элементом;
+                    * Отсутствующий тег `<tbody>` в таблицах;
+                    * Вынесение лишних элементов из `<table>`;
+                    * Некорректный порядок закрывающих тегов;
+                    * И многое другое :)
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; align-items: center;">
+
+                    <div>
+                    
+                    ```html[]
+                    <section>
+                        <p>Длинный текст
+                        <p>Второй абзац
+                    </section>
+
+                    <table>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                    </table>
+                    ```
+
+                    Было
+
+                    </div>
+
+                    <div>
+                    
+                    ```html[]
+                    &lt;html>
+                        <head></head>
+                        &lt;body>
+                            <section>
+                                <p>Длинный текст</p>
+                                <p>Второй абзац</p>
+                            </section>
+
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>2</td>
+                                        <td>3</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        &lt;/body>
+                    &lt;/html>
+                    ```
+
+                    Стало
+
+                    </div>
+
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Загрузка ресурсов
+
+                    Традиционно загрузка ресурсов начинается в момент добавления этого ресурса в дерево DOM. Если это, например,
+                    изображение, ресурс начинает загружаться параллельно с дальшейшим построением дерева, не блокируя процесс.
+                    Однако при работе со скриптами построение дерева приостанавливается до тех пор, пока скрипт не загрузится
+                    и не выполнится, поскольку неизвестно, как скрипт изменит дерево, т.е. скрипт блокирует парсинг и
+                    дальнейшую отрисовку.
+
+                    Для ускорения работы с ресурсами в современных браузерах есть **спекулятивный парсер (или сканнер предзагрузки)**,
+                    который работает в отдельном потоке и анализирует непосредственно поток данных, загружаемых из сети. Как только
+                    этот парсер находит указание на загрузку ресурса, он начинает его загружать. Это позволяет основному парсеру
+                    в момент запроса ресурса либо скачивать его, либо уже иметь &laquo;на руках&raquo;.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Загрузка ресурсов
+
+                    Ещё один важный момент относится к количеству ресурсов, которые можно загрузить одновременно. Это зависит от
+                    версии HTTP, которая используется сервером:
+                    
+                    * HTTP/1.1 может загружать **до шести ресурсов** параллельно с одного домена, по одному соединению на каждый ресурс.
+                    * HTTP/2 и HTTP/3 используют всего одно соединение на ресурс, но за счёт мультиплексирования могут загружать
+                      **несколько сотен ресурсов** параллельно.
+
+                    Но подробнее про это мы поговорим в следующем семестре.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Построение дерева CSSOM
+
+                    Во время загрузки CSS-файлов браузер может строить дерево CSSOM. **CSSOM (CSS Object Model)** представляет из себя
+                    объектную модель для стилей, с помощью которой JS может взаимодействовать с ними. Также CSSOM нужен для непосредственной
+                    отрисовки страницы.
+
+                    Этапы построения CSSOM:
+
+                    1. Загрузка CSS-ресурсов из различных источников (из файлов, из встроенных стилей, из импортов).
+                    2. Токенизация потока байт на отдельные селекторы, ключевые слова, строки, единицы измерения, цвета и т.д.
+                    3. Построение AST для каждого ресурса и их объединение в единое дерево CSSOM.
+                    4. Проброс обработанных CSS-ресурсов в `document.styleSheets`.
+                    5. Определение специфичности правил и обработка ключевого слова `!important`.
+                    6. Обработка медиазапросов для отключения лишних файлов стилей.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Построение дерева CSSOM
+
+                    Для удобной работы с CSSOM (например, чтобы добавить новое правило) можно пользоваться массивом `document.styleSheets`.
+                    В нём на каждый источник стилей создаётся отдельный элемент, в который можно добавлять правила или удалять их.
+
+                    Поддержка работы с деревом CSSOM не самая продвинутая, но обычно её более чем достаточно:
+
+                    ```js[]
+                    'use strict';
+
+                    // Добавляем новое правило по индексу 1 в дерево
+                    document.styleSheets[0].insertRule('p { color: darkblue }', 1);
+
+                    // Удаляем правило по индексу 1
+                    document.styleSheets[0].deleteRule(1);
+                    ```
+
+                    Чем-то напоминает работу с `el.innerHTML` :)
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Дерево отрисовки (рендера)
+
+                    После построения деревьев DOM и CSSOM браузер готов строить ещё одно дерево, **дерево отрисовки**.
+                    Это дерево является комбинацией двух предыдущих и выполняет две задачи:
+
+                    * Выявление элементов, которые необходимо отрисовать (не отрисовываются явно скрытые элементы
+                      и элементы типа `&lt;style>`, `&lt;script>` и т.п.).
+                    * Определение конечных стилей элементов с учётом специфичности селекторов и их порядка.
+
+                    На выходе получается дерево, напоминающее дерево DOM, но содержащее в себе объекты с информацией,
+                    как именно нужно отрисовать тот или иной элемент (объекты отрисовки).
+
+                    Дерево отрисовки недоступно напрямую из браузера, но мы можем на него влиять через деревья DOM и CSSOM.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Компоновка (layout)
+
+                    По дереву отрисовки браузер может начать следующий этап, компоновку. Под **компоновкой** подразумевается
+                    процесс определения размеров элементов и их позиции на странице.
+
+                    Компоновка — достаточно тяжёлый с точки зрения вычислений процесс: он выполняется на CPU и выполняется
+                    всякий раз, когда происходит изменение геометрии. При этом не всегда нужно изменять геометрию элементов
+                    всей страницы, порой достаточно просчитать один элемент с его потомками (например, при изменении внутреннего
+                    отступа).
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Компоновка (layout)
+
+                    Из-за сложности компоновки важно помнить, изменения каких свойств запускают её заново:
+
+                    * Ширина и высота (`width` и `height`);
+                    * Позиция для абсолютного позиционирования (`top`, `right`, `bottom` и `left`);
+                    * Внутренние и внешние отступы (`padding` и `margin`);
+                    * Размер шрифта (`font-size`), его семейство (`font-family`) и межстрочный интервал (`line-height`);
+                    * Обтекание элемента (`float`);
+                    * Прокрутка (`overflow`);
+                    * Тип бокса (`display`).
+
+                    В целом, любое свойство подойдёт, если оно меняет размер элемента и/или его позицию.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Компоновка (layout)
+
+                    Отсутствие понимание работы компоновки иногда приводит к низкой производительности страницы. Какой паттерн в JS
+                    точно приведёт к задержкам:
+
+                    * Изменить свойство, которое запускает компоновку;
+                    * Запросить свойство, для которого нужна компоновка.
+
+                    В чём проблема такого кода?
+
+                    Компоновка и в целом перерисовка страницы происходит 60 раз в секунд, т.е. каждые 1/60 секунды (16,67 миллисекунд).
+                    Штатно, если не запрашивать обновлённые свойства сразу, они будут применяться именно с таким интервалом пачкой
+                    (технически при изменении свойства элемент будет помечен как требующий компоновки).
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Компоновка (layout)
+
+                    Если запросить свойство после его изменения, это приведёт к **принудительной компоновке**, то есть браузер будет
+                    вынужден выполнить компоновку заново перед тем, как продолжить выполнение кода.
+
+                    Более того, свойство, которое мы запрашиваем, не должно совпадать со свойством, которое мы изменили. Например,
+                    если мы изменим ширину элемента и после этого запросим высоту, это тоже приведёт к принудительной компоновке.
+
+                    ```js[]
+                    // Для каждого элемента изменяем высоту и смотрим, куда он встал по высоте
+
+                    for (const element of sections) {
+                        element.style.width = '500px';
+                        let h = element.offsetHeight;  // <- Вот тут будет принудительная компоновка
+                    }
+                    ```
+
+                    Для одного элемента такой код нестрашен, но для сотен...
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Компоновка (layout)
+
+                    Самый простой способ сделать такой код более эффективным: вызывать часть, для которой нужна компоновка, с помощью
+                    функции `requestAnimationFrame()`. Она принимает в себя коллбэк, который выполнится, когда браузер начнёт перерисовку
+                    страницы в штатном режиме. К этому моменту все изменения будут известны, но не посчитаны.
+
+                    ```js[]
+                    // Отдельно изменяем ширину элементов
+                    for (const element of sections) {
+                        element.style.width = '500px';
+                    }
+
+                    // Отдельно получаем пересчитанную высоту после перерисовки
+                    requestAnimationFrame(() => {
+                        for (const element of sections) {
+                            let h = element.offsetHeight;
+                        }
+                    });
+                    ```
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Отрисовка (paint)
+
+                    После компоновки браузер выполняет отрисовку. **Отрисовка** отвечает за непосредственное преобразование блоков, изображений
+                    и текста в набор пикселей на странице. Преобразование выполняется следующим образом:
+
+                    1. Определение элементов, которые необходимо отрисовать (отдельно текст, отдельно прямоугольники, отдельно изображения).
+                    2. Растеризация (преобразование элементов в набор пикселей, для каждого типа элементов производится по-разному).
+                    3. Вывод на экран (или в слой).
+
+                    Естественно, чем сложнее превратить, например, CSS-свойство или букву в пиксели, тем дольше будет отрисовываться элемент.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Композитинг (composition)
+
+                    Осталось поговорить про то, как браузер оптимизирует отрисовку.
+                    
+                    Если есть, например, sticky-элементы, всё время перерисовывать всё изображение из-за изменяющейся позиции одного такого
+                    элемента накладно и неэффективно. Удобнее воспользоваться следующим трюком: вынести такой элемент на отдельный слой
+                    и в дальнейшем работать с ним отдельно.
+
+                    Второй случай, когда нам выгодно вынести элемент на отдельный слой: видео (`<video>`) или холст (`<canvas>`). Так как
+                    предполагается, что они будут изменяться часто, проще вынести их.
+
+                    Такие слои перед тем, как выводить на экран, нужно скомпоновать в единое изображение. Этот процесс называется **композитингом**.
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Композитинг (composition)
+
+                    Композитинг полезен тем, что он выполняется на GPU, а не на CPU (в отличие от компоновки и отрисовки). Это позволяет быстро выполнять
+                    определённые операции в рамках анимаций:
+
+                    * Преобразования элементов (`transform`);
+                    * Наложение фильтров (`filter`);
+                    * Изменение прозрачности (`opacity`).
+
+                    Также к выделению в отдельный слой приводит наличие элементов с различным `z-index` и наличие свойства `will-change`. Это свойство
+                    позволяет явно сказать браузеру, что у элемента будет меняться то или иное CSS-свойство, и нужно быть к этому готовым.
+
+                    При этом иногда браузер сам пытается предсказать, какие элементы стоит вынести на отдельный слой. Посмотреть, что в итоге получилось,
+                    можно в инструментах разработчика (вкладка &laquo;Слои&raquo;).
+                </textarea>
+            </section>
+            <section data-markdown style="text-align: left">
+                <textarea data-template>
+                    ## Композитинг (composition)
+
+                    Что наличие композитинга и слоёв говорит нам на практике: при необходимости изменения геометрии объекта в рамках анимации лучше это делать
+                    не через свойства блочной модели (`width`, `height` и прочие), а через `transform`.
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; align-items: center;">
+                    <div>
+
+
+                    ```css[]
+                    @keyframes slow-anim {
+                        from { top: 0; }
+                        to { top: 250px; }
+                    }
+
+                    .element {
+                        position: relative;
+                        animation: slow-anim 2s ease-in-out;
+                    }
+                    ```
+
+                    Не очень хороший вариант
+
+                    </div>
+                    <div>
+
+
+                    ```css[]
+                    @keyframes fast-anim {
+                        from { transform: translateY(0); }
+                        to { transform: translateY(250px); }
+                    }
+
+                    .element {
+                        animation: fast-anim 2s ease-in-out;
+                        will-change: transform;
+                    }
+                    ```
+
+                    Хороший вариант
+                        
+                    </div>
+                    </div>
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+                    # Вопросы?
+                </textarea>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.js" integrity="sha512-35L3EFHQcGaTZ6QN9wAg9iK1hTPVCn8RGsscuXjm5JdmDRyOw+/IWJ4wavGkozQ8VDoddD7nV1psHgu/BYNpxQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js" integrity="sha512-tDzEYXTFwGOO3tWp8oTV3yGeZ4lG4gUt+tJFQTsP7W4jV/MJ1Rgr6m9aICicjh/ymL5GD6jkHXDi9cHKfctFGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/markdown/markdown.min.js" integrity="sha512-4exkEeyVuaWUFKozXl6L3UCugl6ai1cKnrVFkWUstdrNB2sDxxmPEaHBzTlYm9wX78EjPzEBG0s8k37oPeUFIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js" integrity="sha512-xkVKkN0o7xECTHSUZ9zdsBYRXiAKH7CZ3aICpW6aQJZsufVVRLhEBTDjTpC1tPzm+gNZiOeW174zXAB2fOLsTg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+            width: 1600,
+            height: 900,
+            margin: 0.1,
+
+            slideNumber: 'c/t',
+            controls: false,
+            hash: true,
+
+            // Learn about plugins: https://revealjs.com/plugins/
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+
+</html>
